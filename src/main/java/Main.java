@@ -2,10 +2,8 @@ import customExceptions.RemoveFromBalanceException;
 import customExceptions.SetCurrencyException;
 import operations.cardManagment.CardManager;
 import operations.depositManagment.DepositManager;
-import products.cards.Card;
-import products.cards.CreditCard;
-import products.cards.CurrencyCard;
-import products.cards.DepositCard;
+import products.cards.*;
+import products.deposit.CreateDeposit;
 import products.deposit.Deposit;
 
 import java.io.BufferedReader;
@@ -19,16 +17,7 @@ public class Main {
    private static List<Card> cardList = new ArrayList<>();
    private static List<Deposit> depositList = new ArrayList<>();
    private static final float percentCredit = 15;
-   private static final float percentDeposit = 7;
     public static void main(String[] args) throws IOException {
-//        System.out.println("""
-//                Chose one:
-//                 1)Create card
-//                 2)Create deposit
-//                 3)Manage cards
-//                 4)Manage deposit
-//                 5)Exit
-//                """);
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         try {
             int i = 1;
@@ -57,7 +46,11 @@ public class Main {
                          break;
                     case 2:
                         try {
-                            createDeposit();
+                            System.out.println("\nSet product name: ");
+                            String name = reader.readLine();
+                            System.out.println("\nSet currency type: ");
+                            String currencyType = reader.readLine();
+                            createDeposit(name, currencyType);
                             break;
                         } catch (SetCurrencyException sce) {
                             System.out.println(sce.getMessage());
@@ -66,15 +59,10 @@ public class Main {
                     case 3:
                         CardManager cardManager = new CardManager();
                         List<Card> cardList2 = cardManager.choseACard(cardList, percentCredit);
-//                        System.out.print("Card List :"); cardList.forEach(System.out::print);
-//                        System.out.println();
-//                        System.out.print("Card List 2: "); cardList2.forEach(System.out::print);
-//                        System.out.println();
                         if (cardList2.size() == 0){
                             break;
                         }
                         else cardList = cardList2;
-//                        System.out.print("finished card list : "); cardList.forEach(System.out::print);
                         break;
                     case 4:
                         DepositManager depositManager = new DepositManager();
@@ -106,6 +94,8 @@ public class Main {
 
     public static void createCardOfChosenType() throws IOException, SetCurrencyException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+        System.out.println("\nSet product name: ");
+        String name = reader.readLine();
         System.out.println("""
                                 Chose type: 
                                 1)Credit
@@ -120,60 +110,36 @@ public class Main {
         }
         switch (i){
             case 1,2:
-                System.out.println("\nSet card name: ");
-                String name = reader.readLine();
                 if (i == 1) {
-                    CreditCard creditCard = new CreditCard(0.0, name, percentCredit);
+                    CreditCard creditCard =  CreateCards.createCreditCard(name);
                     cardList.add(creditCard);
                 }
                 if (i == 2) {
-                    DepositCard depositCard = new DepositCard(0.0, name);
+                    DepositCard depositCard = CreateCards.createDepositCard(name);
                     cardList.add(depositCard);
                 }
                 System.out.println(" \nCard was successfully added\n");
                 break;
             case 3:
-                System.out.println("\nSet card name: ");
-                String name2 = reader.readLine();
                 System.out.println("\nSet currency type: ");
                 String currencyType = reader.readLine();
-                if ((currencyType.toLowerCase().equals("usd") | currencyType.toLowerCase().equals("euro"))) {
-                    CurrencyCard currencyCard = new CurrencyCard(0.0, name2, currencyType);
-                }
-                else throw new SetCurrencyException("Introduced wrong currency type: ", currencyType);
+                CurrencyCard currencyCard = CreateCards.createCurrencyCard(name, currencyType);
                 break;
             case 4: break;
+            default:
+                System.out.println("Wrong input");
+                break;
         }
 
 
     }
 
-    public static void createDeposit() throws IOException, SetCurrencyException {
-        System.out.println("Set deposit name: ");
-        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-        String name = reader.readLine();
-        System.out.println("\nSet currency type: ");
-        String currencyType = reader.readLine();
+    public static void createDeposit(String name, String currencyType) throws IOException, SetCurrencyException {
         if ((currencyType.toLowerCase().equals("usd") | currencyType.toLowerCase().equals("euro"))) {
-            Deposit deposit = new Deposit(currencyType, 0.0, name, percentDeposit);
+            Deposit deposit = CreateDeposit.createDeposit(name, currencyType);
+            depositList.add(deposit);
             System.out.println("Deposit was successfully added");
         }
         else throw new SetCurrencyException("Introduced wrong currency type: ", currencyType);
-    }
-
-    public static List<Card> getCardList() {
-        return cardList;
-    }
-
-    public static List<Deposit> getDepositList() {
-        return depositList;
-    }
-
-    public static void setCardList(List<Card> cardList) {
-        Main.cardList = cardList;
-    }
-
-    public static void setDepositList(List<Deposit> depositList) {
-        Main.depositList = depositList;
     }
 }

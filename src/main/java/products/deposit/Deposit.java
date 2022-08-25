@@ -39,4 +39,13 @@ public class Deposit {
         this.currentBalance = this.currentBalance + (this.currentBalance * ((this.percent / 365) * i));
         this.calendar = currentDate;
     }
+
+    public String getCurrency() {
+        return currency;
+    }
+
+    public String getName() {
+        return name;
+    }
+
 }

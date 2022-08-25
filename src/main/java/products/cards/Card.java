@@ -39,7 +39,6 @@ public  class Card {
         if (CreditCard.class.equals(card.getClass())){
             ((CreditCard) card).removeFromBalanceCreditCard(valueToRemove, (CreditCard) card);
         }
-        this.currentBalance -= valueToRemove;
     }
 
 }
